@@ -3,6 +3,30 @@ var express = require('express')
 var app = express()
 var Slack = require('slack-node');
 var Airtable = require('airtable-node');
+const AWS = require('aws-sdk');
+
+const s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY
+});
+
+const uploadFile = () => {
+  var airtableDate = {
+    backlog: '2',
+    inprogress: '7'
+  };
+  const params = {
+    Bucket: 'slack-airtable', // pass your bucket name
+    Key: 'airtable.json', // file will be saved as testBucket/contacts.csv
+    Body: "data"
+  };
+  s3.upload(params, function(s3Err, data) {
+    if (s3Err) throw s3Err
+    console.log(`File uploaded successfully at ${data.Location}`)
+  });
+};
+
+uploadFile();
 
 slackApiToken = process.env.SLACK_AUTH_TOKEN;
 airtableApiToken = process.env.AIRTABLE_API_KEY;

@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "airtable-node": "^0.1.20",
+    "aws-sdk": "^2.434.0",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "nodemon": "^1.18.10",
