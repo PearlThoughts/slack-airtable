@@ -11,14 +11,14 @@ const s3 = new AWS.S3({
 });
 
 const uploadFile = () => {
-  var airtableDate = {
+  var airtableDate = [{
     backlog: '2',
     inprogress: '7'
-  };
+  }];
   const params = {
     Bucket: 'slack-airtable', // pass your bucket name
     Key: 'airtable.json', // file will be saved as testBucket/contacts.csv
-    Body: "data"
+    Body: JSON.stringify(airtableDate)
   };
   s3.upload(params, function(s3Err, data) {
     if (s3Err) throw s3Err
