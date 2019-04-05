@@ -4,16 +4,20 @@ var app = express()
 var Slack = require('slack-node');
 var Airtable = require('airtable-node');
 const AWS = require('aws-sdk');
+var datetime = require('node-datetime');
 
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_KEY
 });
 
+var dt = datetime.create();
+var currentDate = dt.format('d-m-Y');
+var fileName = 'airtable_' +  currentDate + '.json';
 const uploadFile = () => {
   const params = {
     Bucket: 'slack-airtable', // pass your bucket name
-    Key: 'airtable2.json', // file will be saved as testBucket/contacts.csv
+    Key: fileName, // file will be saved as testBucket/contacts.csv
   };
   s3.headObject(params).on('success', function(response) {
     s3.getObject(params, function(err, data) {
@@ -29,14 +33,15 @@ const uploadFile = () => {
 function uploadFiletoS3(data) {
   var airtableData = {
     "inprogress" : 7,
-    "backlog" : 8
+    "backlog" : 8,
+    "datetime" : dt.format('d-m-Y H:M:S')
   }
   console.log(data);
   data.push(airtableData);
   console.log(data);
   const params = {
     Bucket: 'slack-airtable', // pass your bucket name
-    Key: 'airtable2.json', // file will be saved as testBucket/contacts.csv
+    Key: fileName, // file will be saved as testBucket/contacts.csv
     Body: JSON.stringify(data)
   };
   s3.upload(params, function(s3Err, data) {
