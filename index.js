@@ -11,20 +11,39 @@ const s3 = new AWS.S3({
 });
 
 const uploadFile = () => {
-  var airtableDate = [{
-    backlog: '2',
-    inprogress: '7'
-  }];
   const params = {
     Bucket: 'slack-airtable', // pass your bucket name
-    Key: 'airtable.json', // file will be saved as testBucket/contacts.csv
-    Body: JSON.stringify(airtableDate)
+    Key: 'airtable2.json', // file will be saved as testBucket/contacts.csv
+  };
+  s3.headObject(params).on('success', function(response) {
+    s3.getObject(params, function(err, data) {
+      let objectData = data.Body.toString(); 
+      uploadFiletoS3(JSON.parse(objectData));
+    }); 
+  }).on('error',function(error){
+    var airtableData = [];
+    uploadFiletoS3(airtableData);
+  }).send();
+};
+
+function uploadFiletoS3(data) {
+  var airtableData = {
+    "inprogress" : 7,
+    "backlog" : 8
+  }
+  console.log(data);
+  data.push(airtableData);
+  console.log(data);
+  const params = {
+    Bucket: 'slack-airtable', // pass your bucket name
+    Key: 'airtable2.json', // file will be saved as testBucket/contacts.csv
+    Body: JSON.stringify(data)
   };
   s3.upload(params, function(s3Err, data) {
-    if (s3Err) throw s3Err
-    console.log(`File uploaded successfully at ${data.Location}`)
+      if (s3Err) throw s3Err
+      console.log(`File uploaded successfully at ${data.Location}`)
   });
-};
+}
 
 uploadFile();
 
